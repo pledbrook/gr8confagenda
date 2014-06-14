@@ -53,9 +53,9 @@ class AgendaService extends IntentService {
         if (sid>=0) {
             boolean addToFavorites = !favorites.contains(sid)
             if (addToFavorites) {
-                mainThreadHandler.post {
-                    Toast.makeText(this, "Added ${sessions.find { it.id == sid }.title} to your sessions", Toast.LENGTH_SHORT).show()
-                }
+                mainThreadHandler.post(AgendaService.&doSomething.curry(this, sessions, sid)) // {
+//                    Toast.makeText(this, "Added ${sessions.find { it.id == sid }.title} to your sessions", Toast.LENGTH_SHORT).show()
+//                }
                 favorites.add(sid)
             } else {
                 mainThreadHandler.post {
@@ -71,6 +71,10 @@ class AgendaService extends IntentService {
         response.setAction(UPDATE_FAVORITES_RESPONSE)
         response.addCategory(CATEGORY)
         sendBroadcast(response)
+    }
+
+    protected static void doSomething(AgendaService service, List<Session> sessions, long sid) {
+        Toast.makeText(service, "Added ${sessions.find { it.id == sid }.title} to your sessions", Toast.LENGTH_SHORT).show()
     }
 
     private void edit(@DelegatesTo(SharedPreferences.Editor) Closure cl) {
